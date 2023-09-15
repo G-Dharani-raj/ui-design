@@ -7,6 +7,9 @@ const bookSchema = mongoose.Schema({
 	coverImg: String,
 	description: String,
 	rating: Number,
+	count: Number,
+	totalRating: Number,
+	isbn: { type: Number, required: true, maxLength: 13, unique: true },
 });
 
 const BookModel = mongoose.model("book", bookSchema);
