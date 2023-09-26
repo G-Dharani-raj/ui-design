@@ -1,12 +1,12 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const express = require("express");
-const UserModel = require("../model/User.model");
+const UserModel = require("../model/User.model.js");
 require("dotenv").config();
 const userRouter = express.Router();
 
 userRouter.post("/register", async (req, res) => {
-	let { email, name, password } = req.body;
+	let { email, name, password, isAdmin } = req.body;
 	try {
 		let check_user = await UserModel.find({ email });
 		if (check_user.length > 0) {
@@ -14,7 +14,12 @@ userRouter.post("/register", async (req, res) => {
 		} else {
 			bcrypt.hash(password, 5, async (err, hash) => {
 				if (err) res.status(500).send({ message: err.message });
-				let newUser = new UserModel({ email, name, password: hash });
+				let newUser = new UserModel({
+					email,
+					name,
+					password: hash,
+					isAdmin,
+				});
 				await newUser.save();
 			});
 			res.status(200).send({ message: "User registered successfully" });
@@ -42,6 +47,11 @@ userRouter.post("/login", async (req, res) => {
 					res.status(401).send({ message: "Invalid credentials" });
 				}
 			});
-		}
-	} catch (error) {}
+		} else res.status(401).send({ message: "Invalid credentials" });
+	} catch (error) {
+		res.status(500).send({ message: error.message });
+		QAZ;
+	}
 });
+
+module.exports = userRouter;
